@@ -3,7 +3,7 @@
     "info": {
         "version": "1.0.0",
         "title": "API (Fake one but looks very similar)",
-        "description": "<form><math><mtext></form><form><mglyph><svg><mtext><textarea><path id='</textarea><img onerror=alert('potential xss') src=1>'></form>"
+        "description": "<form><math><mtext></form><form><mglyph><svg><mtext><textarea><path id=\"</textarea><img onerror=alert('textarea') src=1>\"></form>"
     },
     "host": "api.staging.aml-ai.net",
     "basePath": "/",
