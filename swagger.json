@@ -1,0 +1,7 @@
+{
+    "url": "https://example.com/",
+    "urls": [{
+        "url": "https://example.com/",
+        "name": "Example Fake URL"
+    }]
+}
