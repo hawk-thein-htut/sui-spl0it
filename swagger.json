@@ -1,7 +1,7 @@
 {
-    "url": "https://example.com/",
+    "url": "https://raw.githubusercontent.com/hawk-thein-htut/sui-spl0it/refs/heads/main/hawk-swagger.json",
     "urls": [{
-        "url": "https://example.com/",
+        "url": "https://raw.githubusercontent.com/hawk-thein-htut/sui-spl0it/refs/heads/main/hawk-swagger.json",
         "name": "Example Fake URL"
     }]
 }
