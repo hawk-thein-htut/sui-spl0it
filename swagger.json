@@ -4,6 +4,10 @@
         {
             "url": "https://raw.githubusercontent.com/hawk-thein-htut/sui-spl0it/refs/heads/main/hawk-swagger.json",
             "name": "Example Fake URL (json)"
+        },
+        {
+            "url": "https://raw.githubusercontent.com/hawk-thein-htut/sui-spl0it/refs/heads/main/hawk-swagger-param-test.json",
+            "name": "Param Test (json)"
         }
     ]
 }

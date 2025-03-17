@@ -1,0 +1,2452 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "API (Fake one again)",
+        "description": "Testing params ij"
+    },
+    "host": "api.staging.aml-ai.net",
+    "basePath": "/",
+    "tags": [
+        {
+            "name": "customer-checks-controller",
+            "description": "Customer Checks Controller"
+        },
+        {
+            "name": "transaction-checks-controller",
+            "description": "Transaction Checks Controller"
+        }
+    ],
+    "schemes": [
+        "https"
+    ],
+    "paths": {
+            "/a\"; try{java.lang.Runtime.getRuntime().exec(\"ls\");}catch(Exception e){} \"": {
+            "post": {
+                "tags": [
+                    "customer-checks-controller"
+                ],
+                "summary": "Perform check on customer",
+                "operationId": "checkUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "customerChecks",
+                        "description": "customerChecks",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GatewayCustomerChecks"
+                        }
+                    },
+                    {
+                        "name": "waitFor",
+                        "in": "query",
+                        "description": "waitFor",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Customer successfully checked",
+                        "schema": {
+                            "$ref": "#/definitions/CustomerResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/CustomerResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "425": {
+                        "description": "Too early. Please do not send yet this customer. Try again later."
+                    },
+                    "429": {
+                        "description": "Too many requests. Please retry later"
+                    }
+                },
+                "security": [
+                    {
+                        "API_KEY": [
+                            "global"
+                        ]
+                    }
+                ]
+            }
+        },
+        "/v1/transaction-checks": {
+            "post": {
+                "tags": [
+                    "transaction-checks-controller"
+                ],
+                "summary": "Perform Transaction checks on a new transaction",
+                "operationId": "processUsingPOST",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "parameters": [
+                    {
+                        "name": "dryRun",
+                        "in": "query",
+                        "description": "dryRun",
+                        "required": false,
+                        "type": "string",
+                        "default": "false"
+                    },
+                    {
+                        "in": "body",
+                        "name": "gatewayTransaction",
+                        "description": "gatewayTransaction",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GatewayTransaction"
+                        }
+                    },
+                    {
+                        "name": "waitFor",
+                        "in": "query",
+                        "description": "waitFor",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully started with Transaction checks and already finished immediate decision",
+                        "schema": {
+                            "$ref": "#/definitions/TransactionResponse"
+                        }
+                    },
+                    "202": {
+                        "description": "Successfully started with Transaction checks but immediate decision is not available yet"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "429": {
+                        "description": "Too many requests. Please retry later"
+                    }
+                },
+                "security": [
+                    {
+                        "API_KEY": [
+                            "global"
+                        ]
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "transaction-checks-controller"
+                ],
+                "summary": "Reprocess Transaction checks on a existing transaction",
+                "operationId": "reprocessUsingPATCH",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "caseId",
+                        "in": "query",
+                        "description": "caseId",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "gatewayTransaction",
+                        "description": "gatewayTransaction",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/GatewayTransaction"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully started with Transaction checks and already finished immediate decision",
+                        "schema": {
+                            "$ref": "#/definitions/TransactionResponse"
+                        }
+                    },
+                    "202": {
+                        "description": "Successfully started with Transaction checks but immediate decision is not available yet",
+                        "schema": {
+                            "$ref": "#/definitions/TransactionResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "425": {
+                        "description": "PATCH request was sent too fast after POST request. Please retry later"
+                    },
+                    "429": {
+                        "description": "Too many requests. PLease try later"
+                    }
+                },
+                "security": [
+                    {
+                        "API_KEY": [
+                            "global"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "securityDefinitions": {
+        "API_KEY": {
+            "type": "apiKey",
+            "name": "api-key",
+            "in": "header"
+        }
+    },
+    "definitions": {
+        "Account": {
+            "type": "object",
+            "properties": {
+                "accountClosureDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2021-01-02",
+                    "description": "Date when account was closed, provide full date (YYYY-MM-DD)"
+                },
+                "accountEmailId": {
+                    "type": "string",
+                    "example": "harles.hollinten@mail.com",
+                    "description": "Email address that uniquely identifies the account within the scheme (e.g. for PayPal)"
+                },
+                "accountId": {
+                    "type": "string",
+                    "example": 435863453,
+                    "description": "Id that identifies the account uniquely within the scheme or the sending sending tenant.\nE.g.\n- merchant ID (MID) for credit card schemes\n- tokenized card number if it is unique within the tenant"
+                },
+                "accountNumber": {
+                    "type": "string",
+                    "example": "DE12500105170648489890",
+                    "description": "Account number that identifies the account uniquely withing the scheme along with other account details, if the scheme provides such an account number (e.g. IBAN, national account number)."
+                },
+                "accountOpeningDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2021-01-01",
+                    "description": "Date when account was opened, provide full date (YYYY-MM-DD)"
+                },
+                "accountStatus": {
+                    "type": "string",
+                    "example": "open",
+                    "description": "Status of the account"
+                },
+                "accountType": {
+                    "type": "string",
+                    "example": "checking account",
+                    "description": "Type of account (e.g Money market account, checking account, savings account)"
+                },
+                "attributes": {
+                    "type": "array",
+                    "example": [
+                        "PND account"
+                    ],
+                    "description": "List of account attributes (e.g PND account, unacceptable risk account, partial assets freeze)",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "bankCountry": {
+                    "type": "string",
+                    "example": "FR",
+                    "description": "Country of the bank or financial insitution (ISO 3166 Alpha-2)"
+                },
+                "bankIdentifier": {
+                    "type": "string",
+                    "example": "SSKMDEMM",
+                    "description": "The bank identification code (BIC)."
+                },
+                "bankName": {
+                    "type": "string",
+                    "example": "STADTSPARKASSE MUENCHEN",
+                    "description": "The bank name."
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "BTC",
+                    "description": "Currency the account is operated in.\n_Examples_:\n- ETH\n- BTC\n- EUR\n- USD\n... (reach out if additional values are required)"
+                },
+                "expiry": {
+                    "type": "string",
+                    "example": 202911,
+                    "description": "Expiry month of the account details <YYYYMM>.E.g. expiry data for credit cards."
+                },
+                "holder": {
+                    "type": "string",
+                    "example": "John Smith",
+                    "description": "The full name of the owner of the bank account with middle name, format: First Name, Middle Name, Last Name."
+                },
+                "last4Digits": {
+                    "type": "string",
+                    "example": 435863453,
+                    "description": "Last for digits of the account number if the full account number cannot be provided.E.g. for credit card payments"
+                },
+                "location": {
+                    "description": "Information on the branch where the account was opened",
+                    "$ref": "#/definitions/ContactDetails"
+                },
+                "overdraftLimit": {
+                    "type": "number",
+                    "example": 500.0,
+                    "description": "Overdraft limit amount"
+                },
+                "productCode": {
+                    "type": "string",
+                    "example": "BPD",
+                    "description": "Code of the product used to facilitate the payment (as provided by the scheme operator)\n\nSee here for examples of such product codes\n  - [Visa Product Id](https://developer.visa.com/guides/request_response_codes#product_id)\n  - [Master/VISA product codes](https://payzen.io/in/webservices-payment/implementation-webservices-v5/\nvisa-mastercard-product-codes-cardresponse.productcode.html)\n_Examples_:\n- BPD (MASTER Business Premium DEBIT)\n- P (Visa Gold)\n- WIC (EBT woman, infants, children )\n- FOOD_STAMP\n- ..."
+                },
+                "productType": {
+                    "type": "string",
+                    "example": "CREDIT_CARD",
+                    "description": "Type of the product or service.\n_Examples_:\n- CHECKING_ACCOUNT\n- CREDIT_CARD\n- DEBIT_CARD\n- PREPAID_CARD\n- GIRO_ACCOUNT\n- CHECKING_ACCOUNT\n- SAVINGS_ACCOUNT\n- STORED_VALUE_CARD\n- TERM_ACCOUNT\n- BASIS_ACCOUNT (as GIRO_ACCOUNT without the possibility to overdraft)\n- VOUCHER (women, infants, children as part of EBT scheme),\n- ... (reach out if additional values are required)"
+                },
+                "scheme": {
+                    "type": "string",
+                    "example": "SEPA",
+                    "description": "Scheme or processing network within the account details uniquely\nidentify an account. Country code for national banking schemes (ISO 3166 Alpha-2).+\nAMEX, AFFINBANK, AMBANK, BANCONTACT, BCMC, BITPAY, CARD_MERCHANTACCOUNT (for merchant accounts accepting card payments)\n, CARD2CARD, CCWEB, CIMBCLICKS, CITI, DE, DIRECTPAY, DRAGONPAY, DISCOVER, ENETS, EPS, ESAPAY, ESTONIANBANKS, FINNISH, GB\n, GIROPAY, HONGLEONGBANK, IDEAL, INSTANTTRANSFER, JCB, MAESTRO, MASTER, MAXIMA, MAYBANKTWOU, MULTIBANCO, MYBANK, MYCLEARFPX, P24\n, P24PAYOUT, PAYSAFECARD, PAYSBUY, PAYSERA, PAYU, PUGGLEPAY, RHBBANK, SAFETYPAY, SEPA, SEVENELEVEN, SOLO, SINGPOST, SWITCH\n, TELEINGRESO, TRUSTLY, TRUSTPAY, UKASH, UNIONPAY, US, VERKKOPANKKI, VISA, WEBMONEY, WUQUICKPAY\n ... (reach out if additional values are required)"
+                },
+                "webLinks": {
+                    "type": "array",
+                    "description": "List of web links/urls to representations of the company or person in the internet or intranet",
+                    "items": {
+                        "$ref": "#/definitions/WebLink"
+                    }
+                }
+            },
+            "title": "Account"
+        },
+        "AccountForRelationshipDetails": {
+            "type": "object",
+            "properties": {
+                "accountClosureDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "accountEmailId": {
+                    "type": "string"
+                },
+                "accountId": {
+                    "type": "string"
+                },
+                "accountNumber": {
+                    "type": "string"
+                },
+                "accountOpeningDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "accountStatus": {
+                    "type": "string"
+                },
+                "accountType": {
+                    "type": "string"
+                },
+                "attributes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "bankCountry": {
+                    "type": "string"
+                },
+                "bankIdentifier": {
+                    "type": "string"
+                },
+                "bankName": {
+                    "type": "string"
+                },
+                "contractualDetails": {
+                    "$ref": "#/definitions/ContractualDetails"
+                },
+                "countryOfSettlement": {
+                    "type": "string",
+                    "example": "NL",
+                    "description": "Country that has been designated settle transactions for this account holder"
+                },
+                "creditLimitDetails": {
+                    "$ref": "#/definitions/CreditLimitDetails"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "expiry": {
+                    "type": "string"
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "holder": {
+                    "type": "string"
+                },
+                "last4Digits": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/ContactDetails"
+                },
+                "overdraftLimit": {
+                    "type": "number"
+                },
+                "productCode": {
+                    "type": "string"
+                },
+                "productType": {
+                    "type": "string"
+                },
+                "scheme": {
+                    "type": "string"
+                },
+                "webLinks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/WebLink"
+                    }
+                }
+            },
+            "title": "AccountForRelationshipDetails"
+        },
+        "AccountHoldingPartyData": {
+            "type": "object",
+            "properties": {
+                "accountReplaced": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "True if the account has been replaced before (see AccountReplacedNotes for reasoning)"
+                },
+                "accountReplacedNotes": {
+                    "type": "string",
+                    "example": "Chargeback rate exceeded",
+                    "description": "Reasoning for why the account has been replaced"
+                },
+                "characteristics": {
+                    "description": "various characteristics describing the account holder",
+                    "$ref": "#/definitions/Characteristics"
+                },
+                "companyDetails": {
+                    "$ref": "#/definitions/CompanyDetails"
+                },
+                "contactDetails": {
+                    "$ref": "#/definitions/ContactDetails"
+                },
+                "customerGroupId": {
+                    "type": "string",
+                    "example": 32112388,
+                    "description": "A hierarchy level for customers. Can be an internal grouping of customers or the name of a department the customer is assigned to"
+                },
+                "customerId": {
+                    "type": "string",
+                    "example": 4681354,
+                    "description": "Customer number that identifies the customer uniquely in the system of the bank"
+                },
+                "customerRelationshipDetails": {
+                    "description": "Information about internal customer care for this account holder",
+                    "$ref": "#/definitions/CustomerRelationshipDetails"
+                },
+                "customerSince": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2014-01-15",
+                    "description": "The account holder is a customer since the provided date <YYYY-DD-MM>. This date gets converted internally to timestamp format."
+                },
+                "customerStatus": {
+                    "type": "string",
+                    "description": "Customer status of the account holding party\n- KEY_ACCOUNT\n- NEW\n- MONITORING\n- CLOSED\n- ... (request additional values if required)"
+                },
+                "customerType": {
+                    "type": "string",
+                    "example": "CORPORATION",
+                    "description": "Type of customer.\nExample values:\n- ASSOCIATION\n- CORPORATION\n- GOVERNMENT_AGENCY\n- INDIVIDUAL\n- INTERNAL_ORGANIZATION\n- LIMITED_LIABILITY_COMPANY\n- PARTNERSHIP\n- TAX_EXEMPT_ORGANIZATION\n- ORGANIZATION\n- RETAIL\n- BUYER\n- LEGAL\n- PRIVATE\n- SUPPLIER\n- IC\n- UNKNOWN (provide only if unknown is exceptional)\nOther values are possible. Please reach out."
+                },
+                "dba": {
+                    "type": "array",
+                    "description": "'Doing-business-as contact details",
+                    "items": {
+                        "$ref": "#/definitions/ContactDetails"
+                    }
+                },
+                "deviceDetails": {
+                    "description": "Device details used by the client when they registered the account.",
+                    "$ref": "#/definitions/DeviceDetails"
+                },
+                "flags": {
+                    "type": "array",
+                    "description": "Markers for client account.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "personalDetails": {
+                    "$ref": "#/definitions/PersonalDetails"
+                },
+                "referenceAccount": {
+                    "description": "Sole account to or from funds shall be transferred",
+                    "$ref": "#/definitions/Account"
+                },
+                "registrationDetails": {
+                    "description": "Registration details used by the client when they registered the account.",
+                    "$ref": "#/definitions/RegistrationDetails"
+                },
+                "riskLevel": {
+                    "type": "string",
+                    "example": "low",
+                    "description": "Expected level of risk, describing the likeliness that the bank customer is involved in fraudulent activities; allowed values: (\"LOW\", \"MEDIUM\", \"HIGH\", \"PROHIBITED\")",
+                    "enum": [
+                        "HIGH",
+                        "LOW",
+                        "MEDIUM",
+                        "PROHIBITED"
+                    ]
+                },
+                "role": {
+                    "type": "string",
+                    "example": "Primary",
+                    "description": "Role in the account ownership"
+                },
+                "signedProducts": {
+                    "type": "array",
+                    "example": [
+                        "checking-account",
+                        "visa-debit-card",
+                        "mortgage"
+                    ],
+                    "description": "List the products the account holder signed",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "taxId": {
+                    "type": "string",
+                    "example": "079 / 123 / 12347",
+                    "description": "Tax id (VAT, Tax number, permant tax identification) that uniquely identifies the holder"
+                },
+                "taxIdType": {
+                    "type": "string",
+                    "description": "Tax ID type"
+                }
+            },
+            "title": "AccountHoldingPartyData",
+            "description": "In case of a joint or shared account, the information on the main account holder should be sent under accountHoldingPartyData. The information on the secondary holders or co-owners should be sent via accountHoldingParties[]. accountHoldingPartyData need to contain values if accountHoldingParties[] is not empty"
+        },
+        "AdditionalId": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "example": "CLAIM_ID",
+                    "description": "String that represents a type of the additional id provided in 'value' field."
+                },
+                "value": {
+                    "type": "string",
+                    "example": "450441b1-c4a7-42a2-a806-ccd87db877e9",
+                    "description": "Additional ID value"
+                }
+            },
+            "title": "AdditionalId"
+        },
+        "Assessment": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2020-01-24",
+                    "description": "Date the reflects the state of the information provided (YYYY-MM-DD)"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "FICO",
+                    "description": "Name of the conducted assessment. If it's a 3rd party assessment, pass the name of the provider or product\n_Examples_:\n- EQUIFAX\n- FICO\n- IDOLOGY\n- INTERNAL\n- KYC\n- OFAC\n- SCHUFA\n- VERID\n- PEP_SCORE\n- ADVERSE_MEDIA_SCORE\n- SANCTION_SCORE\n- ... (please reach out to request other values)"
+                },
+                "notes": {
+                    "type": "string",
+                    "example": "Manually reviewed",
+                    "description": "Free text for notes or comments regarding the assessment"
+                },
+                "referenceId": {
+                    "type": "string",
+                    "example": "56461a6315",
+                    "description": "Reference to the original assessment"
+                },
+                "score": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 756.0,
+                    "description": "Score that was given in the assessment. The range of the score depends on the assessment"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "DONE",
+                    "description": "Status of the assessment.\n_Examples:\n- IN_PROGRESS\n- DONE"
+                }
+            },
+            "title": "Assessment"
+        },
+        "Buyer": {
+            "type": "object",
+            "properties": {
+                "billingAddress": {
+                    "$ref": "#/definitions/BuyerAddress"
+                },
+                "customerId": {
+                    "type": "string",
+                    "example": 4681354,
+                    "description": "Unique identifier of the buyer"
+                },
+                "shippingAddress": {
+                    "$ref": "#/definitions/BuyerAddress"
+                }
+            },
+            "title": "Buyer"
+        },
+        "BuyerAddress": {
+            "type": "object",
+            "properties": {
+                "addressValidSince": {
+                    "type": "string",
+                    "example": "2017-04",
+                    "description": "Date since the given postal address is valid. Provide date <yyyy-mm-dd>, month <yyyy-mm> or year only <yyyy>"
+                },
+                "allAssignedCustomerIds": {
+                    "type": "array",
+                    "example": [
+                        "I-234982-324-1232",
+                        "I-342512-121-4123"
+                    ],
+                    "description": "List of all customer ids that are representing this account holder.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "contactId": {
+                    "type": "string",
+                    "example": "K3408534094",
+                    "description": "Id that helps referencing the contact information back to the system from which the data originates"
+                },
+                "contactName": {
+                    "type": "string",
+                    "example": "Adam Smith",
+                    "description": "Contact name if different from the name provided in PersonDetails/CompanyDetails. Leave empty otherwise."
+                },
+                "contactNameExtended": {
+                    "type": "string",
+                    "example": "c/o Mrs Camber",
+                    "description": "Extension of the name line if required"
+                },
+                "country": {
+                    "type": "string",
+                    "example": "DE",
+                    "description": "Country of the contact address of the individual or company/organization"
+                },
+                "emailAddresses": {
+                    "type": "array",
+                    "example": [
+                        "noreply@company.com",
+                        "john.smith@shoutlook.com"
+                    ],
+                    "description": "List of email addresses on which the customer can be reached.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "phoneNumbers": {
+                    "type": "array",
+                    "example": [
+                        "+4915178859632",
+                        "+4915178858526"
+                    ],
+                    "description": "List of phone numbers on which the customer can be reached.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "region": {
+                    "type": "string",
+                    "example": "BY",
+                    "description": "Region of the contact address. Skip if not needed for a full address (Country subdivision code as defined in ISO 3166-2)"
+                },
+                "regionExtended": {
+                    "type": "string",
+                    "example": "Maricopa",
+                    "description": "Extension field for region (e.g. county)"
+                },
+                "street": {
+                    "type": "string",
+                    "example": "Leopoldstr. 12",
+                    "description": "Street (incl. number if applicable)"
+                },
+                "streetExtended": {
+                    "type": "string",
+                    "example": "apt. RE-243",
+                    "description": "Possible extention of the street line in the address block. Provide if required."
+                },
+                "town": {
+                    "type": "string",
+                    "example": "Munich",
+                    "description": "City of residence of the customer in case the customer is an individual. City where the main office of the company is located in case the account belongs to a company."
+                },
+                "unstructuredAddress": {
+                    "type": "string",
+                    "example": "Taunusanlage 12 60325, Frankfurt Am Main, DE",
+                    "description": "Unstructured address.\nShould be filled only if the address cannot be provided in the structured manner, that is,\ntown, zip code, country or street."
+                },
+                "webLinks": {
+                    "type": "array",
+                    "example": [
+                        {
+                            "title": "google",
+                            "url": "http://www.google.com"
+                        }
+                    ],
+                    "description": "List of web links (refer to WebLink data type) / or strings representing URLs. JsonNode type applied for backward compatibility.",
+                    "items": {
+                        "$ref": "#/definitions/JsonNode"
+                    }
+                },
+                "zip": {
+                    "type": "string",
+                    "example": 81737,
+                    "description": "Postal code of contact address of the individual or company"
+                }
+            },
+            "title": "BuyerAddress"
+        },
+        "Characteristics": {
+            "type": "object",
+            "properties": {
+                "businessPurposeDistribution": {
+                    "type": "array",
+                    "description": "Distribution across business purposes. In addition to assignment of business purposes under companyDetails.businessPurposes",
+                    "items": {
+                        "$ref": "#/definitions/Distribution"
+                    }
+                },
+                "depositDelay": {
+                    "type": "string",
+                    "example": "7d",
+                    "description": "Delay of availability of deposited funds.\nCan be numeric (suffix 'd' for days) or\ncategoric (reach out if categoric values are required)."
+                },
+                "discountFrequency": {
+                    "type": "string",
+                    "example": "WEEKLY",
+                    "description": "Frequency of discount.\n_Examples_:\n- DAILY\n- WEEKLY\n- MONTHLY\n- QUARTERLY"
+                },
+                "employmentDetails": {
+                    "description": "Details of employment for an individual",
+                    "$ref": "#/definitions/EmploymentDetails"
+                },
+                "entryModeDistribution": {
+                    "type": "array",
+                    "description": "Expected contribution over channels.",
+                    "items": {
+                        "$ref": "#/definitions/Distribution"
+                    }
+                },
+                "expectedIncomeDaily": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 45000.0,
+                    "description": "Expected daily income (cashflow positive volume) in configured base currency"
+                },
+                "expectedIncomeMonthly": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 110000.0,
+                    "description": "Expected monthly income (cashflow positive volume) in configured base currency"
+                },
+                "expectedIncomeYearly": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 150000.0,
+                    "description": "Expected income volume per year in configured base currency."
+                },
+                "expectedTicketSizeAverage": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 127.45,
+                    "description": "Expected avg ticket size in configured base currency"
+                },
+                "expectedTicketSizeMax": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 20000.0,
+                    "description": "Max ticket size expected"
+                },
+                "expectedTransactionCountDaily": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 5000.0,
+                    "description": "Expected count of transactions per day"
+                },
+                "expectedTransactionCountMonthly": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 50000.0,
+                    "description": "Expected count of transactions per month"
+                },
+                "expectedTransactionCountYearly": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 500000.0,
+                    "description": "Expected count of transactions per year"
+                },
+                "expectedVolumeDaily": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 50000.0,
+                    "description": "Expected daily volume (|in| + |out|) in configured base currency"
+                },
+                "expectedVolumeMonthly": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 150000.0,
+                    "description": "Expected monthly volume (|in| + |out|) in configured base currency"
+                },
+                "expectedVolumeVolatility": {
+                    "type": "string",
+                    "example": "SEASONAL",
+                    "description": "Volatility of the volume.\n_Examples_:\n- SEASONAL\n- STABLE\n- YEAR_END_SEASON\n- ... (reach out for additional values)"
+                },
+                "expectedVolumeYearly": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 150000.0,
+                    "description": "Expected yearly volume (|in| + |out|) in configured base currency"
+                },
+                "majorCounterpartyAccounts": {
+                    "type": "array",
+                    "description": "List of major counterparty accounts of this account holder",
+                    "items": {
+                        "$ref": "#/definitions/Account"
+                    }
+                }
+            },
+            "title": "Characteristics"
+        },
+        "Check": {
+            "type": "object",
+            "required": [
+                "frontImage"
+            ],
+            "properties": {
+                "frontImage": {
+                    "description": "Front image of a check. Must be less than 1MB in size, encoded in base64 and mimeType: image/jpeg.",
+                    "$ref": "#/definitions/Image"
+                },
+                "rearImage": {
+                    "description": "Rear image of a check. Must be less than 1MB in size, encoded in base64 and mimeType: image/jpeg.",
+                    "$ref": "#/definitions/Image"
+                }
+            },
+            "title": "Check"
+        },
+        "CompanyDetails": {
+            "type": "object",
+            "properties": {
+                "assessments": {
+                    "type": "array",
+                    "description": "List of assessments or scorings that have been conducted",
+                    "items": {
+                        "$ref": "#/definitions/Assessment"
+                    }
+                },
+                "businessDescription": {
+                    "type": "string",
+                    "example": "Specialized on elderly women",
+                    "description": "Free text describing the business"
+                },
+                "businessPurposes": {
+                    "type": "array",
+                    "example": [
+                        "5065",
+                        "5085",
+                        "Financial services"
+                    ],
+                    "description": "List of business purposes of the company (ISO-18245 merchant category codes or an individually defined industry/sector list)",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "companyId": {
+                    "type": "string",
+                    "example": "C0785283592",
+                    "description": "Id that helps referencing back the company information to the system from which the information is originated."
+                },
+                "companyName": {
+                    "type": "string",
+                    "example": "The BORing company",
+                    "description": "Name of the company according to commercial register"
+                },
+                "countryOfRegistration": {
+                    "type": "string",
+                    "example": "PT",
+                    "description": "Country where the company was originally founded and registered (ISO 3166-1 alpha-2)."
+                },
+                "division": {
+                    "type": "string",
+                    "example": "Mortgage",
+                    "description": "Tenants's company division or department contractually involved"
+                },
+                "identityDocuments": {
+                    "type": "array",
+                    "description": "List of documents linked to a company, such as business licenses, incorporation documents or corporate IDs",
+                    "items": {
+                        "$ref": "#/definitions/IdentityDocument"
+                    }
+                },
+                "inBusinessSince": {
+                    "type": "string",
+                    "example": "2019-03",
+                    "description": "In business since <YYYY-MM-DD>, <YYYY-MM>, <YYYY>"
+                },
+                "legalForm": {
+                    "type": "string",
+                    "example": "2HBR",
+                    "description": "Legal form of the company (ISO-20275/ELF Code)."
+                },
+                "organizationType": {
+                    "type": "string",
+                    "example": "NON_PROFIT",
+                    "description": "Type of organization.\n_Examples_:\n- GOVERNMENTAL\n- FOR_PROFIT\n- NON_PROFIT\n- PRIVATE_INVESTMENT_COMPANY\n- ... (reach out to request more values)"
+                },
+                "shareholders": {
+                    "type": "array",
+                    "description": "List of shareholders/owners of the company/organization.",
+                    "items": {
+                        "$ref": "#/definitions/Shareholder"
+                    }
+                },
+                "shareholdersStructure": {
+                    "description": "Structure of shareholders/owners of the company/organization",
+                    "$ref": "#/definitions/ShareholdersStructure"
+                },
+                "staff": {
+                    "type": "array",
+                    "description": "List of the managing directors of the company/organization.",
+                    "items": {
+                        "$ref": "#/definitions/StaffMember"
+                    }
+                },
+                "trademark": {
+                    "type": "string",
+                    "example": "IBM",
+                    "description": "The trademark associated with the company"
+                }
+            },
+            "title": "CompanyDetails"
+        },
+        "ContactDetails": {
+            "type": "object",
+            "properties": {
+                "addressValidSince": {
+                    "type": "string",
+                    "example": "2017-04",
+                    "description": "Date since the given postal address is valid. Provide date <yyyy-mm-dd>, month <yyyy-mm> or year only <yyyy>"
+                },
+                "allAssignedCustomerIds": {
+                    "type": "array",
+                    "example": [
+                        "I-234982-324-1232",
+                        "I-342512-121-4123"
+                    ],
+                    "description": "List of all customer ids that are representing this account holder.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "contactId": {
+                    "type": "string",
+                    "example": "K3408534094",
+                    "description": "Id that helps referencing the contact information back to the system from which the data originates"
+                },
+                "contactName": {
+                    "type": "string",
+                    "example": "Adam Smith",
+                    "description": "Contact name if different from the name provided in PersonDetails/CompanyDetails. Leave empty otherwise."
+                },
+                "contactNameExtended": {
+                    "type": "string",
+                    "example": "c/o Mrs Camber",
+                    "description": "Extension of the name line if required"
+                },
+                "country": {
+                    "type": "string",
+                    "example": "DE",
+                    "description": "Country of the contact address of the individual or company/organization"
+                },
+                "emailAddresses": {
+                    "type": "array",
+                    "example": [
+                        "noreply@company.com",
+                        "john.smith@shoutlook.com"
+                    ],
+                    "description": "List of email addresses on which the customer can be reached.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "phoneNumbers": {
+                    "type": "array",
+                    "example": [
+                        "+4915178859632",
+                        "+4915178858526"
+                    ],
+                    "description": "List of phone numbers on which the customer can be reached.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "region": {
+                    "type": "string",
+                    "example": "BY",
+                    "description": "Region of the contact address. Skip if not needed for a full address (Country subdivision code as defined in ISO 3166-2)"
+                },
+                "regionExtended": {
+                    "type": "string",
+                    "example": "Maricopa",
+                    "description": "Extension field for region (e.g. county)"
+                },
+                "street": {
+                    "type": "string",
+                    "example": "Leopoldstr. 12",
+                    "description": "Street (incl. number if applicable)"
+                },
+                "streetExtended": {
+                    "type": "string",
+                    "example": "apt. RE-243",
+                    "description": "Possible extention of the street line in the address block. Provide if required."
+                },
+                "town": {
+                    "type": "string",
+                    "example": "Munich",
+                    "description": "City of residence of the customer in case the customer is an individual. City where the main office of the company is located in case the account belongs to a company."
+                },
+                "unstructuredAddress": {
+                    "type": "string",
+                    "example": "Taunusanlage 12 60325, Frankfurt Am Main, DE",
+                    "description": "Unstructured address.\nShould be filled only if the address cannot be provided in the structured manner, that is,\ntown, zip code, country or street."
+                },
+                "webLinks": {
+                    "type": "array",
+                    "example": [
+                        {
+                            "title": "google",
+                            "url": "http://www.google.com"
+                        }
+                    ],
+                    "description": "List of web links (refer to WebLink data type) / or strings representing URLs. JsonNode type applied for backward compatibility.",
+                    "items": {
+                        "$ref": "#/definitions/JsonNode"
+                    }
+                },
+                "zip": {
+                    "type": "string",
+                    "example": 81737,
+                    "description": "Postal code of contact address of the individual or company"
+                }
+            },
+            "title": "ContactDetails"
+        },
+        "ContractualDetails": {
+            "type": "object",
+            "properties": {
+                "contractEndDate": {
+                    "type": "string",
+                    "example": "2020-05-16",
+                    "description": "End date of contract, provided in UTC YYYY-MM-DD"
+                },
+                "contractOneOffPayment": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 100.0,
+                    "description": "One time payment of contract, e.g. deposit. In configured base currency"
+                },
+                "contractStartDate": {
+                    "type": "string",
+                    "example": "2020-05-16",
+                    "description": "Start date of contract, provided in UTC YYYY-MM-DD"
+                },
+                "contractStatus": {
+                    "type": "string",
+                    "example": "ACTIVE"
+                },
+                "contractValueMonthly": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 100.0,
+                    "description": "In configured base currency"
+                },
+                "contractValueTotal": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 10000.0,
+                    "description": "In configured base currency"
+                },
+                "contractValueYearly": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 1000.0,
+                    "description": "In configured base currency"
+                }
+            },
+            "title": "ContractualDetails"
+        },
+        "CounterpartyData": {
+            "type": "object",
+            "properties": {
+                "companyDetails": {
+                    "$ref": "#/definitions/CompanyDetails"
+                },
+                "contactDetails": {
+                    "$ref": "#/definitions/ContactDetails"
+                },
+                "customerId": {
+                    "type": "string",
+                    "example": 4681354,
+                    "description": "Customer number that identifies the customer uniquely in the system of the bank"
+                },
+                "dba": {
+                    "type": "array",
+                    "description": "'Doing-business-as contact details",
+                    "items": {
+                        "$ref": "#/definitions/ContactDetails"
+                    }
+                },
+                "personalDetails": {
+                    "$ref": "#/definitions/PersonalDetails"
+                },
+                "referenceAccount": {
+                    "$ref": "#/definitions/Account"
+                },
+                "role": {
+                    "type": "string",
+                    "example": "Primary",
+                    "description": "Role of the person in the transaction"
+                },
+                "taxId": {
+                    "type": "string",
+                    "example": "079 / 123 / 12347",
+                    "description": "Tax id (VAT, Tax number, permant tax identification) that uniquely identifies the holder"
+                },
+                "taxIdType": {
+                    "type": "string",
+                    "description": "Tax ID type"
+                },
+                "verificationDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "1970-01-01",
+                    "description": "The counterparty is verified since the provided date <YYYY-DD-MM>"
+                }
+            },
+            "title": "CounterpartyData",
+            "description": "In case of multiple counterparties, the information on the main counterparty should be sent under counterpartyData. The information on the remaining counterparties should be sent via counterparties[].counterpartyData need to contain values if counterparties[] is not empty"
+        },
+        "CreditLimitDetails": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "example": 1005.0,
+                    "description": "12323"
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "EUR",
+                    "description": "Currency the limit is operated in"
+                }
+            },
+            "title": "CreditLimitDetails"
+        },
+        "CustomerRelationshipDetails": {
+            "type": "object",
+            "properties": {
+                "allAccounts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/AccountForRelationshipDetails"
+                    }
+                },
+                "businessUnit": {
+                    "type": "string",
+                    "example": "GAMBLING",
+                    "description": "Name of the business unit the customer is assigned to"
+                },
+                "exemptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "staff": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/StaffMember"
+                    }
+                }
+            },
+            "title": "CustomerRelationshipDetails"
+        },
+        "CustomerResponse": {
+            "type": "object",
+            "properties": {
+                "caseId": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "customerId": {
+                    "type": "string"
+                },
+                "flaggingResults": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/FlaggingResult"
+                    }
+                },
+                "riskFactors": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/RiskFactorsResult"
+                    }
+                },
+                "riskLevel": {
+                    "type": "string"
+                },
+                "screeningResults": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "$ref": "#/definitions/ScreeningResult"
+                    }
+                }
+            },
+            "title": "CustomerResponse"
+        },
+        "CustomerReviewSchedule": {
+            "type": "object",
+            "properties": {
+                "nextReviewDate": {
+                    "type": "string",
+                    "example": "2023-12",
+                    "description": "Next customer review date <YYYY-MM-DD>, <YYYY-MM>, <YYYY>"
+                }
+            },
+            "title": "CustomerReviewSchedule"
+        },
+        "DeviceDetails": {
+            "type": "object",
+            "properties": {
+                "deviceId": {
+                    "type": "string",
+                    "example": "C02LM2CSFD59",
+                    "description": "Unique identifier for the device used by the client (desktop, notebook, tablet, mobile)."
+                },
+                "deviceType": {
+                    "type": "string",
+                    "example": "iPhone",
+                    "description": "Device and model used by the client (desktop, notebook, tablet, mobile)."
+                },
+                "entryChannel": {
+                    "type": "string",
+                    "example": "Browser",
+                    "description": "Browser or application version used by the customer. Example: Google Chrome 104.0.5112.79 (Official Build) (64-bit)."
+                },
+                "operatingSystem": {
+                    "type": "string",
+                    "example": "Windows11",
+                    "description": "Operating system and version used by the client."
+                }
+            },
+            "title": "DeviceDetails"
+        },
+        "Distribution": {
+            "type": "object",
+            "properties": {
+                "labels": {
+                    "type": "array",
+                    "example": [
+                        "MAGNETIC_STRIPE"
+                    ],
+                    "description": "Specify the kind of distribution.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "share": {
+                    "type": "number",
+                    "format": "double",
+                    "example": 0.75,
+                    "description": "Share of the defined label"
+                }
+            },
+            "title": "Distribution"
+        },
+        "EmploymentDetails": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "EMPLOYED",
+                    "description": "Field describing status of employment"
+                }
+            },
+            "title": "EmploymentDetails"
+        },
+        "ExchangeRate": {
+            "type": "object",
+            "properties": {
+                "factor": {
+                    "type": "number",
+                    "example": 0.6501,
+                    "description": "Factor applied for the exchange from the given source currency to the configured base currency"
+                },
+                "sourceCurrency": {
+                    "type": "string",
+                    "example": "CAD",
+                    "description": "Source currency of the exchange. TargetCurrency is the configured base currency"
+                }
+            },
+            "title": "ExchangeRate"
+        },
+        "FlaggingResult": {
+            "type": "object",
+            "properties": {
+                "flag": {
+                    "type": "string"
+                }
+            },
+            "title": "FlaggingResult"
+        },
+        "GatewayCustomerChecks": {
+            "type": "object",
+            "properties": {
+                "callbackUrl": {
+                    "type": "string",
+                    "example": "https://callback.url/1234",
+                    "description": "Url that is called for any changes to the transaction status e.g.Operator marks the transactions as unsuspicious and systems posts to callback url."
+                },
+                "customerReviewSchedule": {
+                    "$ref": "#/definitions/CustomerReviewSchedule"
+                },
+                "masterData": {
+                    "$ref": "#/definitions/MasterData"
+                },
+                "network": {
+                    "type": "string",
+                    "example": "ETHEREUM",
+                    "description": "Underlying technical network used. Esp when it does not align with the scheme.For Multichain cryptocurrencies use it to identify the underlying blockchain in case of native or bridged usage"
+                }
+            },
+            "title": "GatewayCustomerChecks"
+        },
+        "GatewayTransaction": {
+            "type": "object",
+            "properties": {
+                "accountHoldingParty": {
+                    "type": "string",
+                    "example": "FUNDS_ORIGINATOR",
+                    "description": "The party that is holding an account with the tenant.",
+                    "enum": [
+                        "FUNDS_BENEFICIARY",
+                        "FUNDS_ORIGINATOR"
+                    ]
+                },
+                "additionalIds": {
+                    "type": "array",
+                    "description": "Additional IDs of the transaction.",
+                    "items": {
+                        "$ref": "#/definitions/AdditionalId"
+                    }
+                },
+                "appendedCustomData": {
+                    "type": "object",
+                    "example": {
+                        "additionalCustomerId": "1231"
+                    },
+                    "description": "Any additional tenant data that is relevant for processing as json string."
+                },
+                "balanceBeforeTransaction": {
+                    "type": "number",
+                    "example": 8473.25,
+                    "description": "Balance of account before the transaction took place. Two or three decimal places accepted depending on currency."
+                },
+                "balanceCurrency": {
+                    "type": "string",
+                    "example": "EUR",
+                    "description": "Currency of tenant account in ISO alpha-3 code format for traditional currencies or cryptocurrency code."
+                },
+                "callbackUrl": {
+                    "type": "string",
+                    "example": "https://callback.url/1234",
+                    "description": "Url that is called for any changes to the transaction status e.g.Operator marks the transactions as unsuspicious and systems posts to callback url."
+                },
+                "cashbackAmount": {
+                    "type": "number",
+                    "example": 10.0,
+                    "description": "Amount that is cash back as in Credit Card transactions"
+                },
+                "cashbackFeeAmount": {
+                    "type": "number",
+                    "example": 0.1,
+                    "description": "The fee that has to be paid for the cashback"
+                },
+                "channel": {
+                    "type": "string",
+                    "example": "ECOMMERCE",
+                    "description": "Channel used to facilitate the payment.\n_Examples_:\n- ATM\n- BACKOFFICE,\n- BANKING\n- BRANCH\n- COLLECTION_AGENCY\n- ECOMMERCE\n- INITIATION_SERVICE\n- INTERNET\n- MCOMMERCE\n- MOBILE_BANKING\n- MOTO\n- NOT_AVAILABLE _(only if it is typically available but not available on single occasions.\nIf the channel is never available in your usecase, don't send anything)_\n- ONLINE_BANKING\n- OTHER _(reach out to request additional values!)_\n- POS"
+                },
+                "check": {
+                    "description": "Check data",
+                    "$ref": "#/definitions/Check"
+                },
+                "executionScopes": {
+                    "type": "string",
+                    "example": "INTERNAL,XMAS_SALE",
+                    "description": "Free text the initiating transaction execution scopes. Capital letters, comma separated values."
+                },
+                "fundsBeneficiary": {
+                    "description": "Account of beneficiary of money flow",
+                    "$ref": "#/definitions/Account"
+                },
+                "fundsOriginator": {
+                    "description": "Account of originator of money flow",
+                    "$ref": "#/definitions/Account"
+                },
+                "initiatedAmount": {
+                    "type": "number",
+                    "example": 86.24,
+                    "description": "This is the amount the transaction was initiated in. If there is currency exchange, settled and initiated amounts differ. Two or three decimal places accepted depending on currency."
+                },
+                "initiatedCurrency": {
+                    "type": "string",
+                    "example": "USD",
+                    "description": "This is the currency the transaction was initiated in ISO alpha-3 code format for traditional currencies or cryptocurrency code. If there is currency exchange, settled and initiated currencies differ."
+                },
+                "initiatingParty": {
+                    "type": "string",
+                    "example": "FUNDS_ORIGINATOR",
+                    "description": "Which of the two parties involved initiated the transaction.",
+                    "enum": [
+                        "FUNDS_BENEFICIARY",
+                        "FUNDS_ORIGINATOR"
+                    ]
+                },
+                "masterData": {
+                    "$ref": "#/definitions/TransactionMasterData"
+                },
+                "network": {
+                    "type": "string",
+                    "example": "ETHEREUM",
+                    "description": "Underlying technical network used. Esp when it does not align with the scheme.For Multichain cryptocurrencies use it to identify the underlying blockchain in case of native or bridged usage"
+                },
+                "orderData": {
+                    "$ref": "#/definitions/OrderData"
+                },
+                "paymentMeans": {
+                    "type": "string",
+                    "example": "CASH",
+                    "description": "Means of the payment.\n_Examples_:\n- CHECK\n- CASH\n- CARD\n- BANK_TRANSFER\n- QUASI_CASH\n- ATM\n- CASHBACK\n- EWALLET\n- REMITTANCE\n- ... (please request if other values are required)"
+                },
+                "paymentType": {
+                    "type": "string",
+                    "example": "REFUND",
+                    "description": "Type of the transaction\nDefaults to CREDIT or DEBIT depending on originator and beneficiary.\n_Examples_:\n- ACCOUNT_VERIFICATION\n- AUTHORIZATION\n- AUTHORIZATION_CAPTURE\n- AVS_ONLY\n- BALANCE_INQUIRY\n- BONUS - Monetary compensation given by the tenant to one of its consumers.\n- CAPTURE\n- CAPTURE_HOLD\n- CAPTURE_HOLD_RELEASE\n- CHARGEBACK\n- DEATH_NOTIFICATION\n- FEE\n- FRAUD_WRITE_OFF - Transaction with which a tenant covers some debt of one of its consumers after a fraud incident.\n- REFUND\n- REFUND_WITHOUT_AUTHORIZATION\n- REVERSAL\n- WRITE_OFF - Transaction with which a tenant covers some debt of one of its consumers."
+                },
+                "purposeCode": {
+                    "type": "string",
+                    "example": "SSBE",
+                    "description": "For SEPA transaction use SEPA purpose codes, for non-SEPA use corresponding codes as applicable in the region/market."
+                },
+                "relatedTransactions": {
+                    "type": "array",
+                    "description": "Reference to other, previous transactions (e.g. in case of a refund, reference to the original payment).",
+                    "items": {
+                        "$ref": "#/definitions/RelatedTransaction"
+                    }
+                },
+                "settledAmount": {
+                    "type": "number",
+                    "example": 99.98,
+                    "description": "This is the amount that is shown on the bank statement of the customer. Two or three decimal places accepted depending on currency."
+                },
+                "settledCurrency": {
+                    "type": "string",
+                    "example": "EUR",
+                    "description": "Currency of the customer in ISO alpha-3 code format for traditional currencies or cryptocurrency code."
+                },
+                "tenantProcessingTimestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2019-10-16T14:38:47.812",
+                    "description": "Timestamp the transaction is processed at the tenant in UTC time zone. If it is not set, current UTC time is used."
+                },
+                "tenantTransactionId": {
+                    "type": "string",
+                    "example": 1234,
+                    "description": "ID of the transaction at the tenant."
+                },
+                "tipAmount": {
+                    "type": "number",
+                    "example": 5.0,
+                    "description": "Tip amount - as used typically in card payments. Same currency as settled currency"
+                },
+                "tradeData": {
+                    "description": "Data for trade payment type. An example is CIA Cash in Advance or LC Letters of Credit",
+                    "$ref": "#/definitions/TradeData"
+                },
+                "transactionProcessingDetails": {
+                    "$ref": "#/definitions/TransactionProcessingDetails"
+                },
+                "transactionResult": {
+                    "type": "string",
+                    "example": "FRAUD_SUSPICION",
+                    "description": "FRAUD_SUSPICION, CARD_STOLEN, CARD_LOST, INSUFFICIENT_FUNDS, SUSPICIOUS_MERCHANT_SETUP, INVALID_CVV and more"
+                },
+                "transactionResultMessage": {
+                    "type": "string",
+                    "description": "Textual description for the transaction result as provided by scheme operator"
+                },
+                "ultimateBeneficiary": {
+                    "description": "Ultimate beneficiary",
+                    "$ref": "#/definitions/UltimateBeneficiary"
+                },
+                "ultimateOriginator": {
+                    "description": "Ultimate originator",
+                    "$ref": "#/definitions/UltimateOriginator"
+                },
+                "usage": {
+                    "type": "string",
+                    "example": "Testing API",
+                    "description": "Free text the initiating party sends with the transaction."
+                }
+            },
+            "title": "GatewayTransaction"
+        },
+        "GoodDetails": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "example": "High-quality cotton fabric: 5000 rolls, each measuring 100 meters",
+                    "description": "Description of the good"
+                },
+                "destination": {
+                    "example": "Structured or unstructured address",
+                    "description": "Destination of goods",
+                    "$ref": "#/definitions/ShipmentAddress"
+                },
+                "origin": {
+                    "example": "Structured or unstructured address",
+                    "description": "Origin of goods",
+                    "$ref": "#/definitions/ShipmentAddress"
+                }
+            },
+            "title": "GoodDetails"
+        },
+        "IdentityDocument": {
+            "type": "object",
+            "properties": {
+                "expiryDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2025-01-15",
+                    "description": "Identifies document issuing authority"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "F8624KW3J6",
+                    "description": "Id/number identifiying as printed on the document. E.g. passport number"
+                },
+                "issuingAuthority": {
+                    "type": "string",
+                    "example": "President of Warsaw",
+                    "description": "Identifies document issuing authority"
+                },
+                "issuingCountry": {
+                    "type": "string",
+                    "example": "US",
+                    "description": "Identifies document issuing country (ISO 3166-2)"
+                },
+                "issuingState": {
+                    "type": "string",
+                    "example": "AZ",
+                    "description": "Identifies document issuing state"
+                },
+                "kind": {
+                    "type": "string",
+                    "example": "PASSPORT",
+                    "description": "Kind of identity document provided.\n_Examples_:\n- DRIVING_LICENSE\n- NATIONAL_IDENTITY_CARD\n- PASSPORT\n- SOCIAL_SECURITY\n- ... (reach out if further values are required)"
+                },
+                "link": {
+                    "type": "string",
+                    "example": "https://intranet.bank.com/customers/98234792/passport",
+                    "description": "Link to scan of identity document"
+                }
+            },
+            "title": "IdentityDocument"
+        },
+        "Image": {
+            "type": "object",
+            "required": [
+                "data",
+                "encoding",
+                "mimeType"
+            ],
+            "properties": {
+                "data": {
+                    "type": "string",
+                    "example": "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigD//2Q==",
+                    "description": "Encoded data of the image."
+                },
+                "encoding": {
+                    "type": "string",
+                    "example": "base64",
+                    "description": "Encoding of the image. ",
+                    "enum": [
+                        "base64"
+                    ]
+                },
+                "mimeType": {
+                    "type": "string",
+                    "example": "image/jpeg",
+                    "description": "MIME type of the image. It supports the MIME specification https://datatracker.ietf.org/doc/html/rfc2045.html.",
+                    "enum": [
+                        "image/jpeg"
+                    ]
+                }
+            },
+            "title": "Image"
+        },
+        "Intermediary": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Account of intermediary of money flow",
+                    "$ref": "#/definitions/Account"
+                },
+                "contactDetails": {
+                    "description": "Contact details of the intermediary holding address, web links or phone numbers",
+                    "$ref": "#/definitions/ContactDetails"
+                },
+                "identifier": {
+                    "type": "string",
+                    "example": "SSKMDEMM",
+                    "description": "The intermediary identification code (BICFI).\nCode allocated to a financial institution by the ISO 9362 Registration Authority as\ndescribed in ISO 9362"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Intermediary's name"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "INTERMEDIARY_INSTITUTION",
+                    "description": "Intermediary type"
+                }
+            },
+            "title": "Intermediary"
+        },
+        "JsonNode": {
+            "type": "object",
+            "title": "JsonNode"
+        },
+        "MasterData": {
+            "type": "object",
+            "properties": {
+                "accountHoldingPartyData": {
+                    "description": "Information about the account holding party of the transaction (holding the account at the bank that triggers the AML process)",
+                    "$ref": "#/definitions/AccountHoldingPartyData"
+                },
+                "counterpartyData": {
+                    "description": "Information about the counterparty of the transaction (counterparty from bank's perspective)",
+                    "$ref": "#/definitions/CounterpartyData"
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "underwriterData": {
+                    "description": "Information about the underwriting bank",
+                    "$ref": "#/definitions/UnderwriterData"
+                }
+            },
+            "title": "MasterData"
+        },
+        "OrderData": {
+            "type": "object",
+            "properties": {
+                "buyer": {
+                    "$ref": "#/definitions/Buyer"
+                },
+                "orderAmount": {
+                    "type": "number",
+                    "example": 20.0,
+                    "description": "Total amount of the order"
+                },
+                "orderCurrency": {
+                    "type": "string",
+                    "example": "EUR",
+                    "description": "Currency of the order amount in ISO alpha-3 code format for traditional currencies or cryptocurrency code."
+                },
+                "orderId": {
+                    "type": "string",
+                    "example": "33xxxxx",
+                    "description": "Unique identifier of the order"
+                },
+                "orderItems": {
+                    "type": "array",
+                    "description": "List of order items",
+                    "items": {
+                        "$ref": "#/definitions/OrderItem"
+                    }
+                },
+                "orderStatus": {
+                    "type": "string",
+                    "example": "ACTIVE",
+                    "description": "Status of the order.\nExample values:\n- ACTIVE\n- CANCELLED\n- RETURNED\n- PARTIALLY RETURNED\n"
+                },
+                "orderTimestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2019-10-16T14:38:47.812",
+                    "description": "Timestamp the order is processed at the tenant in UTC time zone."
+                }
+            },
+            "title": "OrderData"
+        },
+        "OrderItem": {
+            "type": "object",
+            "properties": {
+                "orderItemAmount": {
+                    "type": "number",
+                    "example": 20.0,
+                    "description": "This is the amount that is shown on the invoice for this order item."
+                },
+                "orderItemCurrency": {
+                    "type": "string",
+                    "example": "EUR",
+                    "description": "Currency of the settled amount in ISO alpha-3 code format for traditional currencies or cryptocurrency code."
+                },
+                "orderItemProductCategories": {
+                    "type": "array",
+                    "example": [
+                        "Jewelery",
+                        "bags-accessories-jewellery-women"
+                    ],
+                    "description": "List the product categories of this order item",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "orderItemProductCode": {
+                    "type": "string",
+                    "example": 1234,
+                    "description": "Product code of this order item"
+                },
+                "orderItemStatus": {
+                    "type": "string",
+                    "example": "ACTIVE",
+                    "description": "Status of this order item.\nExample values:\n- ACTIVE\n- CANCELLED\n- RETURNED\n- PARTIALLY RETURNED\n"
+                },
+                "seller": {
+                    "$ref": "#/definitions/Seller"
+                }
+            },
+            "title": "OrderItem"
+        },
+        "PersonName": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string",
+                    "example": "Barbara-Maria",
+                    "description": "First name / given name"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Kensigton",
+                    "description": "Last name / family name"
+                },
+                "middleNames": {
+                    "type": "string",
+                    "example": "Helen Kate",
+                    "description": "Middle name(s) separated with space"
+                },
+                "nameAtBirth": {
+                    "type": "string",
+                    "example": "Carlton",
+                    "description": "Name given upon birth"
+                }
+            },
+            "title": "PersonName"
+        },
+        "PersonalDetails": {
+            "type": "object",
+            "properties": {
+                "assessments": {
+                    "type": "array",
+                    "description": "List of assessments or scorings that have been conducted",
+                    "items": {
+                        "$ref": "#/definitions/Assessment"
+                    }
+                },
+                "countryOfBirth": {
+                    "type": "string",
+                    "example": "FR",
+                    "description": "Country where the customer was born."
+                },
+                "countryOfResidence": {
+                    "type": "string",
+                    "example": "DE",
+                    "description": "Country where the customer currently lives."
+                },
+                "dateOfBirth": {
+                    "type": "string",
+                    "example": "1977-01-08",
+                    "description": "Provide full date if available (YYYY-MM-DD). Otherwise provide the data available (e.g. year only)"
+                },
+                "gender": {
+                    "type": "string",
+                    "example": "f",
+                    "description": "Gender: 'f' (female), 'm' (male) or 'x' (other)"
+                },
+                "identityDocuments": {
+                    "type": "array",
+                    "description": "List of documents that identify a person",
+                    "items": {
+                        "$ref": "#/definitions/IdentityDocument"
+                    }
+                },
+                "nationality": {
+                    "type": "string",
+                    "example": "BE",
+                    "description": "Nationality of the individual customer."
+                },
+                "occupation": {
+                    "type": "string",
+                    "example": "Teacher",
+                    "description": "Occupation title"
+                },
+                "personName": {
+                    "description": "Name structured in first, middle and last name.",
+                    "$ref": "#/definitions/PersonName"
+                },
+                "placeOfBirth": {
+                    "type": "string",
+                    "example": "Paris",
+                    "description": "City/place where the customer was born."
+                },
+                "socialSecurityNumber": {
+                    "type": "string",
+                    "example": "078-05-112",
+                    "description": "Social security number"
+                }
+            },
+            "title": "PersonalDetails"
+        },
+        "RegistrationDetails": {
+            "type": "object",
+            "properties": {
+                "internetServiceProvider": {
+                    "type": "string",
+                    "example": "Vodafone",
+                    "description": "Network and IP provider for the IP address used by the client to register the account."
+                },
+                "ipAddress": {
+                    "type": "string",
+                    "example": "172.217.22.14",
+                    "description": "IP address used by the client for account registration (for PEP/Sacntions checks)."
+                },
+                "ipCountry": {
+                    "type": "string",
+                    "example": "PT",
+                    "description": "Country where the IP used to register the account is located at (ISO 3166-1 alpha-2)."
+                }
+            },
+            "title": "RegistrationDetails"
+        },
+        "RelatedTransaction": {
+            "type": "object",
+            "properties": {
+                "tenantTransactionId": {
+                    "type": "string",
+                    "example": "tenant-transaction-id-1234",
+                    "description": "ID of the transaction at the tenant."
+                }
+            },
+            "title": "RelatedTransaction"
+        },
+        "RiskFactorsResult": {
+            "type": "object",
+            "properties": {
+                "factor": {
+                    "type": "string"
+                }
+            },
+            "title": "RiskFactorsResult"
+        },
+        "ScreeningResult": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                }
+            },
+            "title": "ScreeningResult"
+        },
+        "Seller": {
+            "type": "object",
+            "properties": {
+                "customerId": {
+                    "type": "string",
+                    "example": 4681354,
+                    "description": "Unique identifier of the seller"
+                },
+                "customerName": {
+                    "type": "string",
+                    "example": "Adidas",
+                    "description": "Name of the seller"
+                }
+            },
+            "title": "Seller"
+        },
+        "Shareholder": {
+            "type": "object",
+            "properties": {
+                "companyDetails": {
+                    "description": "Details of the company/organization holding the shares.",
+                    "$ref": "#/definitions/CompanyDetails"
+                },
+                "contactDetails": {
+                    "$ref": "#/definitions/ContactDetails"
+                },
+                "liability": {
+                    "type": "string",
+                    "example": "PERSONAL",
+                    "description": "Liability taken.\n_Examples_:\n- LIMITED\n- PERSONAL\n- ... (reach out of additional values are required)"
+                },
+                "personalDetails": {
+                    "description": "Personal details if the shareholder is a natural person.",
+                    "$ref": "#/definitions/PersonalDetails"
+                },
+                "role": {
+                    "type": "string",
+                    "description": "Role/Title/function of the shareholder within the company\n_Examples_:\n- FOUNDER\n- COFOUNDER\n- OWNER\n- MAYORITY_SHAREHOLDER\n- BOARD_MEMBER\n- ... (reach of for further values)"
+                },
+                "share": {
+                    "type": "number",
+                    "example": 0.51,
+                    "description": "Kept share up to max 1 (=100%)"
+                },
+                "taxIds": {
+                    "type": "array",
+                    "description": "List of tax IDs of the shareholder.",
+                    "items": {
+                        "$ref": "#/definitions/TaxId"
+                    }
+                }
+            },
+            "title": "Shareholder"
+        },
+        "ShareholdersStructure": {
+            "type": "object",
+            "properties": {
+                "complexOwnership": {
+                    "type": "string",
+                    "description": "Indicates if the customer has a complex ownership structure.\nPossible values:\n'Y'\n'N'\n"
+                }
+            },
+            "title": "ShareholdersStructure"
+        },
+        "ShipmentAddress": {
+            "type": "object",
+            "properties": {
+                "addressValidSince": {
+                    "type": "string",
+                    "example": "2017-04",
+                    "description": "Date since the given postal address is valid. Provide date <yyyy-mm-dd>, month <yyyy-mm> or year only <yyyy>"
+                },
+                "allAssignedCustomerIds": {
+                    "type": "array",
+                    "example": [
+                        "I-234982-324-1232",
+                        "I-342512-121-4123"
+                    ],
+                    "description": "List of all customer ids that are representing this account holder.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "contactId": {
+                    "type": "string",
+                    "example": "K3408534094",
+                    "description": "Id that helps referencing the contact information back to the system from which the data originates"
+                },
+                "contactName": {
+                    "type": "string",
+                    "example": "Adam Smith",
+                    "description": "Contact name if different from the name provided in PersonDetails/CompanyDetails. Leave empty otherwise."
+                },
+                "contactNameExtended": {
+                    "type": "string",
+                    "example": "c/o Mrs Camber",
+                    "description": "Extension of the name line if required"
+                },
+                "country": {
+                    "type": "string",
+                    "example": "DE",
+                    "description": "Country of the contact address of the individual or company/organization"
+                },
+                "emailAddresses": {
+                    "type": "array",
+                    "example": [
+                        "noreply@company.com",
+                        "john.smith@shoutlook.com"
+                    ],
+                    "description": "List of email addresses on which the customer can be reached.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "phoneNumbers": {
+                    "type": "array",
+                    "example": [
+                        "+4915178859632",
+                        "+4915178858526"
+                    ],
+                    "description": "List of phone numbers on which the customer can be reached.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "portName": {
+                    "type": "string",
+                    "example": "DEAAC",
+                    "description": "Port name for example DEAAC port in Aach."
+                },
+                "region": {
+                    "type": "string",
+                    "example": "BY",
+                    "description": "Region of the contact address. Skip if not needed for a full address (Country subdivision code as defined in ISO 3166-2)"
+                },
+                "regionExtended": {
+                    "type": "string",
+                    "example": "Maricopa",
+                    "description": "Extension field for region (e.g. county)"
+                },
+                "street": {
+                    "type": "string",
+                    "example": "Leopoldstr. 12",
+                    "description": "Street (incl. number if applicable)"
+                },
+                "streetExtended": {
+                    "type": "string",
+                    "example": "apt. RE-243",
+                    "description": "Possible extention of the street line in the address block. Provide if required."
+                },
+                "town": {
+                    "type": "string",
+                    "example": "Munich",
+                    "description": "City of residence of the customer in case the customer is an individual. City where the main office of the company is located in case the account belongs to a company."
+                },
+                "unstructuredAddress": {
+                    "type": "string",
+                    "example": "Taunusanlage 12 60325, Frankfurt Am Main, DE",
+                    "description": "Unstructured address.\nShould be filled only if the address cannot be provided in the structured manner, that is,\ntown, zip code, country or street."
+                },
+                "webLinks": {
+                    "type": "array",
+                    "example": [
+                        {
+                            "title": "google",
+                            "url": "http://www.google.com"
+                        }
+                    ],
+                    "description": "List of web links (refer to WebLink data type) / or strings representing URLs. JsonNode type applied for backward compatibility.",
+                    "items": {
+                        "$ref": "#/definitions/JsonNode"
+                    }
+                },
+                "zip": {
+                    "type": "string",
+                    "example": 81737,
+                    "description": "Postal code of contact address of the individual or company"
+                }
+            },
+            "title": "ShipmentAddress"
+        },
+        "ShipmentRouteDetails": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "description": "Structured or unstructured address",
+                    "$ref": "#/definitions/ShipmentAddress"
+                },
+                "port": {
+                    "description": "Structured or unstructured address of the port",
+                    "$ref": "#/definitions/ShipmentAddress"
+                }
+            },
+            "title": "ShipmentRouteDetails"
+        },
+        "StaffMember": {
+            "type": "object",
+            "properties": {
+                "contactDetails": {
+                    "description": "contactDetails",
+                    "$ref": "#/definitions/ContactDetails"
+                },
+                "personalDetails": {
+                    "description": "personalDetails",
+                    "$ref": "#/definitions/PersonalDetails"
+                },
+                "role": {
+                    "type": "string",
+                    "example": "ACCOUNT_MANAGER",
+                    "description": "Role of the staffer. No need to provide the exact role name. \" +\nCategorize into what makes sense from an AML perspective.\n_Examples_:\n- MANAGER\n- ACCOUNT_MANAGER\n- ... (reach of for further values)"
+                }
+            },
+            "title": "StaffMember"
+        },
+        "TaxId": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "example": "ITIN",
+                    "description": "Tax type"
+                },
+                "value": {
+                    "type": "string",
+                    "example": "12345ABC",
+                    "description": "Tax id"
+                }
+            },
+            "title": "TaxId"
+        },
+        "TradeData": {
+            "type": "object",
+            "properties": {
+                "destination": {
+                    "description": "Destination of goods",
+                    "$ref": "#/definitions/ShipmentRouteDetails"
+                },
+                "documentType": {
+                    "type": "string",
+                    "example": "LETTER_OF_CREDIT",
+                    "description": "Indicates the document from which the trade data is sourced. Accepted values are: LETTER_OF_CREDIT, GUARANTEE, COLLECTION"
+                },
+                "goodsDetails": {
+                    "type": "array",
+                    "description": "Details of the good: An explanation of the item being traded",
+                    "items": {
+                        "$ref": "#/definitions/GoodDetails"
+                    }
+                },
+                "loading": {
+                    "description": "Loading of goods",
+                    "$ref": "#/definitions/ShipmentRouteDetails"
+                },
+                "shippedBy": {
+                    "example": "Global Exporters Ltd.",
+                    "description": "Entity that shipped the goods",
+                    "$ref": "#/definitions/CompanyDetails"
+                },
+                "transit": {
+                    "type": "array",
+                    "description": "Stopovers between the dispatch and the destination",
+                    "items": {
+                        "$ref": "#/definitions/ShipmentRouteDetails"
+                    }
+                },
+                "vesselDetails": {
+                    "description": "Details of the vessel",
+                    "$ref": "#/definitions/VesselDetails"
+                }
+            },
+            "title": "TradeData"
+        },
+        "TransactionConnectionDetails": {
+            "type": "object",
+            "properties": {
+                "internetServiceProvider": {
+                    "type": "string",
+                    "example": "Vodafone",
+                    "description": "Network and IP provider for the IP address used by the client."
+                },
+                "ipAddress": {
+                    "type": "string",
+                    "example": "172.217.22.14",
+                    "description": "IP address used by the client when performing a transaction."
+                },
+                "ipCountry": {
+                    "type": "string",
+                    "example": "PT",
+                    "description": "Country where the IP is located at (ISO 3166-1 alpha-2)."
+                }
+            },
+            "title": "TransactionConnectionDetails"
+        },
+        "TransactionMasterData": {
+            "type": "object",
+            "properties": {
+                "accountHoldingPartyData": {
+                    "description": "Information about the account holding party of the transaction (holding the account at the bank that triggers the AML process)",
+                    "$ref": "#/definitions/AccountHoldingPartyData"
+                },
+                "counterpartyData": {
+                    "description": "Information about the counterparty of the transaction (counterparty from bank's perspective)",
+                    "$ref": "#/definitions/CounterpartyData"
+                },
+                "flags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "underwriterData": {
+                    "description": "Information about the underwriting bank",
+                    "$ref": "#/definitions/UnderwriterData"
+                }
+            },
+            "title": "TransactionMasterData"
+        },
+        "TransactionProcessingDetails": {
+            "type": "object",
+            "properties": {
+                "appliedExchangeRates": {
+                    "type": "array",
+                    "description": "The exchange rate(s) that were actually applied when processing the transaction.\nProvide the exchange rates for all given currencies to the configured, tenant-wide base currency.",
+                    "items": {
+                        "$ref": "#/definitions/ExchangeRate"
+                    }
+                },
+                "avsCheckPass": {
+                    "type": "string",
+                    "example": "NOT_VERIFIED",
+                    "description": "Mapped AVS result codes.\nPreferably provide scheme operator's raw codes (see _avsCheckResultCode_)\n_Examples_:\n- TRUE\n- FALSE\n- NOT_VERIFIED\n- PARTIAL"
+                },
+                "avsCheckResultCode": {
+                    "type": "string",
+                    "example": "L",
+                    "description": "Raw AVS result codes as provided by the scheme operator (see [here]\n\"(https://en.wikipedia.org/wiki/Address_verification_service#AVS_response_codes)).\n\"Provide mapped values if raw values are not available (see _avsCheckPass).\n\"_Examples_:\n\"- L (Visa/Master: Street address matches ,ZIP does not)\n\"- S (AVS not supported)\n\"- ..."
+                },
+                "catLevel": {
+                    "type": "string",
+                    "example": "IN_FLIGHT",
+                    "description": "Level of Cardholder Activated Terminal (CAT) used. See\n[here for reference]( https://www.mastercard.de/content/dam/mccom/de-de\n/haendler/Quick-Guide-to-Cardholder-Activated-Terminals-CATs.pdf)\n__Examples__:\n- 'NOT_A_CAT' (Level 0)\n- 'AUTOMATED_DISPENSING' (CAT1)\n- 'SELF_SERICE' (CAT2)\n- 'LIMITED_AMOUNT' (CAT3)\n- 'IN_FLIGHT' (CAT4)\n- 'ECOMMERCE' (CAT6, includes DSRP and Masterpass)\n- 'TRANSPONDER' (CAT7)\n- 'MPOS' (CAT9, attended and unattended)"
+                },
+                "cvvCheckPass": {
+                    "type": "string",
+                    "example": "TRUE",
+                    "description": "\"Mapped AVS result codes.\n Preverably provide scheme operator's raw codes (see _cvvCheckResultCode_)\n_Examples_:\n- TRUE\n- FALSE\n- NOT_VERIFIED"
+                },
+                "cvvCheckResultCode": {
+                    "type": "string",
+                    "example": "M",
+                    "description": "Raw CVV result codes as provided by the scheme operator (see e.g. [here for Visa]\n(https://developer.visa.com/guides/request_response_codes#card_verification2_results)).\nProvide mapped values if raw values are not available (see _avsCheckPass)\nIf no raw codes are available provde a mapping in _avsCheckPass_.\n\nExample values:\n- M (for Master/Visa match)\n- U (for Master/Visa/Discover not certified)\n- Y (for Amex match)\n- ..."
+                },
+                "deviceDetails": {
+                    "$ref": "#/definitions/DeviceDetails"
+                },
+                "entryMode": {
+                    "type": "string",
+                    "example": "ICC_CONTACTLESS",
+                    "description": "Entry Mode as at point of service. Possible values are dependent on used payment method.\nE.g. as\"\" defined in [ISO 8585](http://www.fintrnmsgtool.com/iso-point-of-service-entry-mode.html):\n- MCOMMERCE,\n- SERVER,\n- CARD_ON_FILE,\n- BAR_CODE,\n- OCR,\n- MAGNETIC_STRIPE,\n- ECOMMERCE,\n- ICC,\n- MAGNETIC_STRIPE_CONTACTLESS,\n- ICC_CONTACTLESS,\n- TOKEN_3RD_PARTY,\n- MICR (as in ACH),\n- MANUAL,\n- MANUAL_AS_FALLBACK,\n- MAGNETIC_STRIPE_AS_FALLBACK,\n- PIN,\n- PINLESS"
+                },
+                "intermediaries": {
+                    "type": "array",
+                    "description": "List of intermediary parties\n\"facilitating international fund transfers.\n\"For example correspondent banks",
+                    "items": {
+                        "$ref": "#/definitions/Intermediary"
+                    }
+                },
+                "location": {
+                    "description": "The location of the transaction (branchId, ATM location, etc.)",
+                    "$ref": "#/definitions/ContactDetails"
+                },
+                "messageInitiator": {
+                    "type": "string",
+                    "example": "VOWADE2B",
+                    "description": "The legal entity which initiated a transaction check"
+                },
+                "networkResponseCode": {
+                    "type": "string",
+                    "example": "AC04",
+                    "description": "Response code as provided by the scheme operator.\n\"Many schemes work with [ISO 8583 response codes](https://en.wikipedia.org/wiki/ISO_8583#Response_code).\n\"Other schemes provide specific codes (e.g. [SEPA reason codes]\n\"(https://www.europeanpaymentscouncil.eu/sites/default/files/kb/file/2018-09/\n\"EPC135-18%20v1.0%20Guidance%20on%20Reason%20Codes%20for%20SCT%20R-transactions.pdf))\n\"_Examples_:\n\"- 5 ('Do not honor' for Mastercard, 'Deny' for Amex)\n\"- AC04 ('Account closed' for SEPA)\n\"- ..."
+                },
+                "networkResponseMessage": {
+                    "type": "string",
+                    "example": "Closed Account Number",
+                    "description": "Response message as provided by the scheme operator"
+                },
+                "pinCheckPass": {
+                    "type": "string",
+                    "example": "TRUE",
+                    "description": "Mapped PIN check result codes.\n\"_Examples_:\n\"- TRUE\n\"- FALSE\n\"- NOT_VERIFIED"
+                },
+                "securityLevel": {
+                    "type": "string",
+                    "example": "3D_SECURE",
+                    "description": "The Security Level Indicator indicates the security level of the acquiring environment\n\n__Examples__:\n - ENCRYPTED\n - NOT_RELEVANT\n - RECURRING\n - REVOLVING\n - ENCRYPTED\n - NO_SECURITY\n - 3D_SECURE\n - 3D_SECURE_SUCCESS\n - 3D_SECURE_MERCHANT_ENABLED_NOT_AUTHENTICATED\n - 3D_SECURE_PREVIOUS_SUCCESS\n - EWALLET_AUTH_NONE\n - EWALLET_AUTH_NOT_USED\n - EWALLET_AUTH_SUCCESS (E-Wallets such as V.me, Masterpass or anyother provider)\n - EWALLET_AUTH_STATIC\n - EWALLET_AUTH_SUCESS_ISSUING_BANK_DECISION\n-  EWALLET_AUTH_NONE_MERCHANT_DECISION_ENABLED"
+                },
+                "terminalId": {
+                    "type": "string",
+                    "example": 23107748,
+                    "description": "TerminalId of the used terminal"
+                },
+                "transactionConnectionDetails": {
+                    "$ref": "#/definitions/TransactionConnectionDetails"
+                },
+                "webLinks": {
+                    "type": "array",
+                    "description": "List of web links/urls to representations of the company or person in the internet or intranet",
+                    "items": {
+                        "$ref": "#/definitions/WebLink"
+                    }
+                }
+            },
+            "title": "TransactionProcessingDetails"
+        },
+        "TransactionResponse": {
+            "type": "object",
+            "properties": {
+                "caseId": {
+                    "type": "string",
+                    "example": "fcf14ed5-939b-4d24-a7d5-8166a2701c10",
+                    "description": "Case Id for the case manager."
+                },
+                "proceed": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Should the transaction proceed (true) or be blocked (false)."
+                },
+                "tenantTransactionId": {
+                    "type": "string",
+                    "example": 1234,
+                    "description": "ID of the transaction at the tenant."
+                },
+                "took": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            },
+            "title": "TransactionResponse"
+        },
+        "UltimateBeneficiary": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Ultimate's account",
+                    "$ref": "#/definitions/Account"
+                },
+                "contactDetails": {
+                    "description": "Contact details of the ultimate holding address, web links or phone numbers",
+                    "$ref": "#/definitions/ContactDetails"
+                },
+                "identifier": {
+                    "type": "string",
+                    "example": "SSKMDEMM",
+                    "description": "The ultimate's identification code (BICFI).\nCode allocated to a financial institution by the ISO 9362 Registration Authority as\ndescribed in ISO 9362"
+                }
+            },
+            "title": "UltimateBeneficiary"
+        },
+        "UltimateOriginator": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Ultimate's account",
+                    "$ref": "#/definitions/Account"
+                },
+                "contactDetails": {
+                    "description": "Contact details of the ultimate holding address, web links or phone numbers",
+                    "$ref": "#/definitions/ContactDetails"
+                },
+                "identifier": {
+                    "type": "string",
+                    "example": "SSKMDEMM",
+                    "description": "The ultimate's identification code (BICFI).\nCode allocated to a financial institution by the ISO 9362 Registration Authority as\ndescribed in ISO 9362"
+                }
+            },
+            "title": "UltimateOriginator"
+        },
+        "UnderwriterData": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "Wells P. Morgan",
+                    "description": "Name of the underwriter"
+                },
+                "underwriterId": {
+                    "type": "string",
+                    "example": "K3408534094",
+                    "description": "Id that helps referencing the information back to the system from which the data originates"
+                }
+            },
+            "title": "UnderwriterData"
+        },
+        "VesselDetails": {
+            "type": "object",
+            "properties": {
+                "vesselName": {
+                    "type": "string",
+                    "description": "Name of the vessel"
+                }
+            },
+            "title": "VesselDetails"
+        },
+        "WebLink": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "example": "google",
+                    "description": "Title that should be displayed instead of link. If not provided, url will be used"
+                },
+                "url": {
+                    "type": "string",
+                    "example": "http://www.google.com",
+                    "description": "web link/url to represent the company or person in the internet or intranet"
+                }
+            },
+            "title": "WebLink"
+        }
+    }
+}
